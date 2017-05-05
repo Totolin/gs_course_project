@@ -372,6 +372,7 @@ function createBuildings() {
             material.map.repeat.set( 1.2, 1 );
         }
 
+        
         var building = new Physijs.BoxMesh(
             geo, material
         );
