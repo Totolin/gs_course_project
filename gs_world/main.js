@@ -63,9 +63,7 @@ if ( havePointerLock ) {
     }, false );
 
 } else {
-
     instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
-
 }
 
 init();
@@ -309,7 +307,7 @@ function createRoad() {
 
 function generateRandomTree() {
     // Texture Loader (to load the image)
-    loader = new THREE.TextureLoader();
+    var loader = new THREE.TextureLoader();
 
     // Tree texture
     var texture = loader.load( 'images/wood.jpg' );
@@ -340,14 +338,11 @@ function createTrees() {
 
     var trees = [], tree;
 
-    // Texture Loader (to load the image)
-    loader = new THREE.TextureLoader();
-
     // Initial generation positions
     var position_x = 30;
     var position_z = 80;
 
-    for (var i=0; i<20; i++) {
+    for (var i=0; i<25; i++) {
 
         tree = generateRandomTree();
         tree.position.x = position_x;
@@ -369,9 +364,16 @@ function createBuildings() {
     var geometry, texture;
     var buildings = [];
 
-    var addBuilding = function (geo, tex, x, y, z) {
+    var addBuilding = function (geo, tex, x, y, z, repeat) {
+        var material = new THREE.MeshLambertMaterial({map: tex});
+
+        if (repeat) {
+            material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
+            material.map.repeat.set( 1.2, 1 );
+        }
+
         var building = new Physijs.BoxMesh(
-            geo, new THREE.MeshLambertMaterial({map: tex}), 0, { restitution: .2 }
+            geo, material
         );
         building.position.x = x;
         building.position.y = y;
@@ -384,13 +386,21 @@ function createBuildings() {
     texture = THREE.ImageUtils.loadTexture('images/building1.jpg');
     addBuilding(geometry, texture, 100, 30, 0);
 
-    geometry = new THREE.BoxGeometry(50, 90, 50);
+    geometry = new THREE.BoxGeometry(150, 90, 50);
     texture = THREE.ImageUtils.loadTexture('images/building2.jpg');
-    addBuilding(geometry, texture, 0, 45, 100);
+    addBuilding(geometry, texture, 12, 45, 100);
 
     geometry = new THREE.BoxGeometry(50, 90, 100);
     texture = THREE.ImageUtils.loadTexture('images/building3.jpg');
     addBuilding(geometry, texture, 100, 45, -100);
+
+    geometry = new THREE.BoxGeometry(50, 90, 100);
+    texture = THREE.ImageUtils.loadTexture('images/building5.jpg');
+    addBuilding(geometry, texture, -100, 45, -100);
+
+    geometry = new THREE.BoxGeometry(50, 190, 100);
+    texture = THREE.ImageUtils.loadTexture('images/building6.jpg');
+    addBuilding(geometry, texture, -100, 95, 30, true);
 
     return buildings;
 }
@@ -456,8 +466,7 @@ function init() {
     environment.renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( environment.renderer.domElement );
 
-    //
-
+    // Add onResize event
     window.addEventListener( 'resize', onWindowResize, false );
 
 }
